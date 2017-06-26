@@ -2,13 +2,10 @@ package syncgroup
 
 import (
 	"fmt"
-	"sort"
 	"sync"
 )
 
 func ExampleSyncGroup() {
-	ch := make(chan int, 10)
-
 	// It is expected that SyncGroup is used in libraries
 	// We represent that here with the randomFetcher struct
 	f := &randomFetcher{}
@@ -19,25 +16,25 @@ func ExampleSyncGroup() {
 		// Here the user does it manually.
 		f.Go(func() {
 			// Usage of SyncGroup.Sync is abstracted away into the library's methods
-			ch <- f.Rand()
+			fmt.Println(f.Rand())
 		})
 	}
 
 	// The level of abstraction for SyncGroup.Wait is expected to match that of .Go
 	f.Wait()
-	close(ch)
 
-	// Here we use a channel and sort it to ensure consistent output for the sake of the example
-	ints := []int{}
-	for i := range ch {
-		ints = append(ints, i)
-	}
-	sort.Ints(ints)
-
-	fmt.Println(ints)
-	// Output:
+	// Unordered Output:
 	// Fetching 10 random numbers...
-	// [0 1 2 3 4 5 6 7 8 9]
+	// 0
+	// 1
+	// 2
+	// 3
+	// 4
+	// 5
+	// 6
+	// 7
+	// 8
+	// 9
 }
 
 type randomFetcher struct {

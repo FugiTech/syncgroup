@@ -23,6 +23,7 @@ func (sg *SyncGroup) Go(fn func()) {
 
 	sg.running.Add(1) // Must be called before sg.watch or it will immediately terminate
 	if sg.count == 0 {
+		sg.finished.Lock()
 		go sg.watch()
 	}
 	sg.count++
@@ -55,7 +56,6 @@ func (sg *SyncGroup) Sync() {
 // Watch maintains the (*SyncGroup).finished lock (used in Wait) and
 // calls Done on the syncing WaitGroup when deadlock is reached
 func (sg *SyncGroup) watch() {
-	sg.finished.Lock()
 	defer sg.finished.Unlock()
 
 	for {

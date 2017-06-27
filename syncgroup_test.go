@@ -1,15 +1,24 @@
 package syncgroup_test
 
 import (
+	"os"
 	"sync/atomic"
 	"testing"
 
 	"github.com/ossareh/syncgroup"
 )
 
+func iterCount(v int) int {
+	if e := os.Getenv("RACE_TEST"); e != "" {
+		return 30
+	}
+
+	return v
+}
+
 func TestSyncGroup_Wait(t *testing.T) {
 	// In the most basic case SyncGroup should behave like a (*sync.WaitGroup)
-	iters := 2000000
+	iters := iterCount(2000000)
 	decrements := int32(iters)
 
 	sg := &syncgroup.SyncGroup{}
@@ -29,7 +38,7 @@ func TestSyncGroup_Wait(t *testing.T) {
 
 func TestSyncGroup_Sync(t *testing.T) {
 	// The real purpose of SyncGroup is to allow functions to Sync() on eachother
-	iters := 200000
+	iters := iterCount(200000)
 	decrements := int32(iters)
 	increments := int32(0)
 
@@ -56,7 +65,7 @@ func TestSyncGroup_Sync(t *testing.T) {
 
 func TestSyncGroup_Mixed(t *testing.T) {
 	// Covers the case of mixed function types, some that sync and some that don't
-	iters := 2000000
+	iters := iterCount(2000000)
 	decrements := int32(iters)
 	increments := int32(0)
 
@@ -91,8 +100,8 @@ func TestSyncGroup_Mixed(t *testing.T) {
 
 func TestSyncGroup_MultiAdd(t *testing.T) {
 	// Add many batches
-	iters := 1000000
-	batches := 100
+	iters := iterCount(1000000)
+	batches := iters / 10
 	decrements := int32(iters)
 	increments := int32(0)
 

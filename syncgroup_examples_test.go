@@ -9,7 +9,7 @@ func ExampleSyncGroup() {
 	// It is expected that SyncGroup is used in libraries
 	// We represent that here with the randomFetcher struct
 	f := &randomFetcher{}
-
+	f.Add(10)
 	for i := 0; i < 10; i++ {
 		// The library author may require end-users to manually use SyncGroup.Go
 		// or may offer a utility method to abstract this away.
